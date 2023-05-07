@@ -1,4 +1,5 @@
 #include "DeffulsHTMLParser/HTMLParser.h"
+#include "DeffulsHTMLParser/tags/html_tags.h"
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -10,6 +11,8 @@ int main(){
     myfile.close();
 
     HtmlParser parser = { fileContents };
-    parser.ParseHTML();
+    WebElements::Html_Tag root;
+    parser.ParseHTML(root);
+
     return 0;
 }

@@ -2,45 +2,36 @@
 #include <vector>
 #include <string>
 #include <map>
-
-namespace TagMap{
-    
-    const std::map<std::int16_t, std::string> cTagMap = {
-        { 0, "<p>" },
-        { 1, "<h1>" },
-        { 2, "<h2>" },
-        { 3, "<h3>" },
-        { 4, "<h4>" },
-        { 5, "<h5>" },
-        { 6, "<h6>" },
-        { 7, "<strong>" },
-        { 8, "<address>" },
-        { 9, "<div>" },
-        { 10, "<a>" },
-        { 11, "<ul>" },
-        { 12, "<li>" },
-        { 13, "<tr>" },
-        { 14, "<td>" },
-        { 15, "<tbody>" },
-        { 16, "<body>"},
-        { 17, "<button>"}
-    };
-}
+#include <iostream>
 
 namespace WebElements{
-
+    
     struct Html_Tag{
         public:
-        explicit Html_Tag(std::int16_t tagCode, std::string tagName) : mTagCode(tagCode), mTagName(tagName) {};
-
-        private:
+        Html_Tag(int tagCode, std::string tagName, std::size_t tagEndPos) : mTagCode(tagCode), mTagName(tagName), mTagEndPos(tagEndPos) {};
+        Html_Tag() = default;
         std::vector<Html_Tag> mChildsVector;
+        private:
         std::map<std::string, std::string> mAttributes;
-        std::int16_t mTagCode;
         std::string mTagName;
+        int mTagCode;
+        std::size_t mTagEndPos;
 
         public:
-        std::string getTag() const {
+
+        void setTagCode(int tagCode) {
+            mTagCode = tagCode;
+        }
+
+        void setTagName(std::string tagName) {
+            mTagName = tagName;
+        }
+
+        std::size_t getTagEndPos() const{
+            return mTagEndPos;
+        }
+        
+        std::string getTagName() const {
             return mTagName;
         }
 
@@ -51,6 +42,10 @@ namespace WebElements{
         void AppendChild(Html_Tag child){
             mChildsVector.push_back(child);
         }
-        
+
+        bool isClosingTag(std::string& element){
+            return element.find("/", 0) == std::string::npos ? false : true;
+        }
+
     };
 }

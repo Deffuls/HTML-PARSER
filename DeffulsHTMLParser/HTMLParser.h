@@ -20,9 +20,6 @@ class HtmlParser{
         mReceiveErrors = receiveErrors;
         mReady = (htmlPage.size() == 0) ? NOT_READY : READY;
     }
-    ~HtmlParser(){
-
-    }
 
     void LoadHTML(std::string htmlPage, bool receiveErrors=false){
         mHtmlContent = htmlPage;
@@ -30,14 +27,27 @@ class HtmlParser{
         mReady = (htmlPage.size() == 0) ? NOT_READY : READY;
     }
 
-    STATUS ParseHTML(){
+    STATUS ParseHTML(WebElements::Html_Tag& rootElement){
         if (mReady != READY) { return HTML_NOT_FOUND; }
-        ReplaceString(mHtmlContent, "\n", "");
-        ShrinkString(mHtmlContent, "<body>", "</body>");
 
+        {
+            ReplaceString(mHtmlContent, "\n", "");
+            ShrinkString(mHtmlContent, "<body>", "</body>");
 
-        
-        std::cout << mHtmlContent << std::endl;
+            std::size_t start_pos = mHtmlContent.find('<');
+            std::size_t stop_pos = mHtmlContent.find('>');
+            
+            if ( start_pos == std::string::npos || stop_pos == std::string::npos) { throw std::invalid_argument( "Unable to Locate Any < > Symbol." ); }
+            stop_pos++;
+
+            std::size_t length = (stop_pos - start_pos);
+            std::string element = mHtmlContent.substr(start_pos, length);
+
+            rootElement = CreateElement(element, stop_pos);
+        }
+
+        ParseElements(mHtmlContent, rootElement, rootElement.getTagEndPos() );
+
         return SUCCESS;
     }
 };
