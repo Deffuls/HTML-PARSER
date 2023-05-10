@@ -1,58 +1,60 @@
 #pragma once
-#include "../signals/signals.h"
 #include "../tags/html_tags.h"
 #include "../builder/tag_builder.h"
 #include <string>
 
-STATUS ReplaceString(std::string& subject, const std::string& search,
-const std::string& replace) {
-    std::size_t pos = 0;
-    while ( (pos = subject.find(search, pos) ) != std::string::npos) {
-         subject.replace(pos, search.length(), replace);
-         pos += replace.length();
-    }
+struct FunctionResponse{
+     public:
+     std::size_t lastPosition;
+     FunctionResponse() = default;
+     FunctionResponse(std::size_t pos){
+          lastPosition = pos;
+     }
+};
+
+std::string ExtractTag(std::string& htmlContent, std::size_t& startPos, std::size_t& stopPos, std::size_t& cpyLastPos, std::size_t& lastPos){
+     cpyLastPos = lastPos;
+     stopPos++;
+     lastPos = stopPos;
+     std::size_t length = (stopPos - startPos);
+     return htmlContent.substr(startPos, length);
 }
 
-STATUS ShrinkString(std::string& subject, const std::string& begin,
-const std::string& end){
-     std::size_t begin_pos = 0;
-     std::size_t end_pos = 0;
-
-     begin_pos = subject.find(begin, begin_pos);
-     end_pos = subject.find(end, end_pos);
-
-     if ( begin_pos == std::string::npos || end_pos == std::string::npos) { return STRING_NOT_FOUND; }
-
-     std::size_t length = (end_pos - begin_pos) + end.size();
-     subject = subject.substr(begin_pos, length);
-     return SUCCESS;
+void AppendText(std::string& htmlContent, WebElements::Html_Tag& self, std::size_t startPos, std::size_t stopPos, std::size_t cpyLastPos){
+     if ( startPos - stopPos > 0 ) {
+          std::string tagText;
+               std::size_t localLength = startPos - cpyLastPos;
+               tagText = htmlContent.substr(cpyLastPos, localLength);
+               self.addTagText(tagText);
+          }
 }
 
-std::size_t ParseElements(std::string& htmlContent, WebElements::Html_Tag& root, std::size_t lastPos){ // body
-     WebElements::Html_Tag child;
 
-     do
-     {
-          {
-          
+FunctionResponse ParseElements(std::string& htmlContent, WebElements::Html_Tag& itself, std::size_t lastPos){
+     
+     for (;;){
           std::size_t start_pos = htmlContent.find('<', lastPos );
           std::size_t stop_pos = htmlContent.find('>', lastPos );
           
-          if ( start_pos == std::string::npos || stop_pos == std::string::npos) { throw std::invalid_argument( "Unable to Locate Any < > Symbol." ); }
-          stop_pos++;
-          lastPos = stop_pos;
+          if ( start_pos == std::string::npos || stop_pos == std::string::npos) { return FunctionResponse(std::string::npos ); }
           
-          std::size_t length = (stop_pos - start_pos);
-          std::string element = htmlContent.substr(start_pos, length);
-
-          if ( root.isClosingTag(element) ) { std::cout << "CLOSING TAG " << element << std::endl; return lastPos; }
-          
-          child = CreateElement(element, stop_pos);
-          root.AppendChild(child);
-
+          {
+               std::size_t cpyLastPos;
+               std::string element = ExtractTag(htmlContent, start_pos, stop_pos, cpyLastPos, lastPos);
+               AppendText(htmlContent, itself, start_pos, stop_pos, cpyLastPos);
+               
+               if ( itself.isClosingTag(element) ) { return FunctionResponse(lastPos); }
+               
+               WebElements::Html_Tag child = CreateElement(element);
+               itself.AppendChild(child);
           }
 
-          lastPos = ParseElements(htmlContent, child, lastPos);
-
-     }while(true);
+          FunctionResponse fResponse = ParseElements(htmlContent, itself.getLastCreatedChild(), lastPos);
+          
+          lastPos = fResponse.lastPosition;
+          
+          if (fResponse.lastPosition == std::string::npos){
+               return fResponse;
+          }
+     }
 }
