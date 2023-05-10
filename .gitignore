@@ -1,6 +1,12 @@
 # Prerequisites
 *.d
 
+# html files are for test only
+*.html
+
+# build folder
+Build/
+
 #vscode folder
 .vscode/
 
