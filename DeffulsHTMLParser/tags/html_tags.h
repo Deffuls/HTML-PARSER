@@ -1,4 +1,5 @@
 #pragma once
+#include "../types/types.h"
 #include <vector>
 #include <string>
 #include <map>
@@ -8,16 +9,31 @@ namespace WebElements{
     
     struct Html_Tag{
         public:
-        Html_Tag(int tagCode, std::string tagName, std::size_t tagEndPos) : mTagCode(tagCode), mTagName(tagName), mTagEndPos(tagEndPos) {};
+        Html_Tag(int tagCode, 
+        std::string tagName, 
+        mapAttributes tagAttributes) : mTagCode(tagCode), mTagName(tagName), mTagAttributes(tagAttributes) {};
+        
         Html_Tag() = default;
         std::vector<Html_Tag> mChildsVector;
         private:
-        std::map<std::string, std::string> mAttributes;
+        mapAttributes mTagAttributes;
+        std::string mTagText;
         std::string mTagName;
         int mTagCode;
-        std::size_t mTagEndPos;
 
         public:
+
+        Html_Tag& getLastCreatedChild(){
+            return mChildsVector.back();
+        }
+
+        void addTagText(std::string tagText){
+            mTagText.append(tagText);
+        }
+
+        std::string getTagText() {
+            return mTagText;
+        }
 
         void setTagCode(int tagCode) {
             mTagCode = tagCode;
@@ -27,16 +43,12 @@ namespace WebElements{
             mTagName = tagName;
         }
 
-        std::size_t getTagEndPos() const{
-            return mTagEndPos;
+        const mapAttributes& getTagAttributes() {
+            return mTagAttributes;
         }
         
         std::string getTagName() const {
             return mTagName;
-        }
-
-        std::string getAttribute() const {
-            return std::string();
         }
 
         void AppendChild(Html_Tag child){
@@ -44,7 +56,10 @@ namespace WebElements{
         }
 
         bool isClosingTag(std::string& element){
-            return element.find("/", 0) == std::string::npos ? false : true;
+            std::string closingTag = mTagName.substr(1, mTagName.size() - 2);
+
+            return element.find("/", 0) != std::string::npos &&
+            element.find(closingTag) != std::string::npos ? true : false;
         }
 
     };
