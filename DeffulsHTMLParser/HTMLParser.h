@@ -29,13 +29,13 @@ class HtmlParser{
 
     STATUS ParseHTML(WebElements::Html_Tag& rootElement){
         if (mReady != READY) { return HTML_NOT_FOUND; }
+        std::size_t stop_pos = mHtmlContent.find('>');
 
         {
-            ReplaceString(mHtmlContent, "\n", "");
-            ShrinkString(mHtmlContent, "<body>", "</body>");
+            Format::ReplaceString(mHtmlContent, "\n", "");
+            Format::ShrinkString(mHtmlContent, "<body>", "</body>");
 
             std::size_t start_pos = mHtmlContent.find('<');
-            std::size_t stop_pos = mHtmlContent.find('>');
             
             if ( start_pos == std::string::npos || stop_pos == std::string::npos) { throw std::invalid_argument( "Unable to Locate Any < > Symbol." ); }
             stop_pos++;
@@ -43,10 +43,10 @@ class HtmlParser{
             std::size_t length = (stop_pos - start_pos);
             std::string element = mHtmlContent.substr(start_pos, length);
 
-            rootElement = CreateElement(element, stop_pos);
+            rootElement = CreateElement(element);
         }
 
-        ParseElements(mHtmlContent, rootElement, rootElement.getTagEndPos() );
+        ParseElements(mHtmlContent, rootElement, stop_pos);
 
         return SUCCESS;
     }
