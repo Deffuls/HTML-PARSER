@@ -2,6 +2,7 @@
 #include "DeffulsHTMLParser/tags/html_tags.h"
 #include "DeffulsHTMLParser/search/searching.h"
 #include "DeffulsHTMLParser/signals/signals.h"
+#include "DeffulsHTMLParser/types/types.h"
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -16,8 +17,7 @@ int main(){
     WebElements::Html_Tag root;
     parser.ParseHTML(root);
 
-    Options::SearchOption myOption;
-    myOption.setTagName("<h2>");
+    Options::SearchOption myOption("<h1>");
     WebElements::Html_Tag resultTag;
     
     STATUS result = Search::TREE::FindElement(root, resultTag, myOption);
