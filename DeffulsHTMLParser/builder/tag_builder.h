@@ -107,10 +107,8 @@ const std::map<std::string, int> cTagMap = {
         { "<dialog>", 99 }
     };
 
-mapAttributes ExtractAttributes(std::string& element){
+mapAttributes ExtractAttributes(std::string& element){ // problem is related to this function somehow.
     mapAttributes attributes;
-
-    // <h1 a="123" b="4444" >
 
     std::size_t firstPos = element.find(" ", (std::size_t)0 );
     std::size_t lastPos = element.find(">", (std::size_t)0 );
@@ -126,6 +124,9 @@ mapAttributes ExtractAttributes(std::string& element){
     for( std::string attr : vAttributes){
 
         std::vector<std::string> vKeyValue = Format::SplitString(attr, '=');
+        
+        std::string l1 = vKeyValue[0];
+        std::string l2 = vKeyValue[1];
 
         attributes.emplace( vKeyValue[0], vKeyValue[1] );
     }

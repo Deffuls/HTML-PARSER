@@ -38,14 +38,14 @@ namespace Format{
 
 
         for (;;){
-            position = str.find(delim, position);
+            position = str.find(delim, position); // a="bred"
 
             if (position == std::string::npos){
                 position = (std::size_t)(str.size() - 1);
-        
-                tokens.push_back(
-                     str.substr(lastPos, position)
-                );
+                std::string formatted = str.substr(lastPos, position );
+                ReplaceString(formatted, "\"", "");
+                ReplaceString(formatted, "'", "");
+                tokens.push_back( formatted );
                 break;
             }
             

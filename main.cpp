@@ -17,7 +17,7 @@ int main(){
     WebElements::Html_Tag root;
     parser.ParseHTML(root);
 
-    Options::SearchOption myOption("<h1>");
+    Options::SearchOption myOption("<h2>", {{"href", "123"}});
     WebElements::Html_Tag resultTag;
     
     STATUS result = Search::TREE::FindElement(root, resultTag, myOption);
