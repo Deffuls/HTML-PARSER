@@ -71,17 +71,36 @@ namespace Search{
 
     namespace InternalUsage{
 
-        void StringMatch(auto target, auto match, Options::MATCH_TYPES matchType, int& matchCounter){
+        void AttributesMatch(Options::MATCH_TYPES::ATTRIBUTES matchType, int foundCounter, int targetCount, int& outResult){
+
+        switch (matchType)
+        {
+        case Options::MATCH_TYPES::ATTRIBUTES::STRICT:
+            if (foundCounter == targetCount){
+                outResult++;
+            }else {outResult = 0;}
+            break;
+        case Options::MATCH_TYPES::ATTRIBUTES::FLEXIBLE:
+            if (foundCounter > 0 && foundCounter <= targetCount){
+                outResult++;
+            }
+            else{ outResult = 0;}
+            break;
+        }
+
+        }
+
+        void StringMatch(auto target, auto match, Options::MATCH_TYPES::STRING matchType, int& matchCounter){
 
             switch (matchType)
             {
-            case Options::MATCH_TYPES::STRICT:
+            case Options::MATCH_TYPES::STRING::STRICT:
                 if ( target == match){
                     matchCounter++;
                 }
                 break;
             
-            case Options::MATCH_TYPES::FIND_IN:
+            case Options::MATCH_TYPES::STRING::FIND_IN:
                 if (target.find(match) != std::string::npos){
                     matchCounter++;
                 }
@@ -94,7 +113,7 @@ namespace Search{
         
         int cMatch = 0;
 
-        InternalUsage::StringMatch( Tag.getTagName(), Option.getTagName(), Option.getMatchType(), cMatch );
+        InternalUsage::StringMatch( Tag.getTagName(), Option.getTagName(), Option.getStringMatchType(), cMatch );
 
         const mapAttributes TagAttr = Tag.getTagAttributes();
         const mapAttributes OptAttr = Option.getAttributes();
@@ -112,11 +131,12 @@ namespace Search{
                 if ( TagAttr.find(optBegin->first) == TagAttr.end() ) { continue; }
 
                 for ( tagBegin; tagBegin != TagAttr.end(); tagBegin++ ){
-                    InternalUsage::StringMatch(tagBegin->second, optBegin->second, Option.getMatchType(), cOptMatches);
+                    InternalUsage::StringMatch(tagBegin->second, optBegin->second, Option.getStringMatchType(), cOptMatches);
                 }
              }
 
-             ( cOptMatches == cOptNeeded ) ? cMatch++ : cMatch = 0 ;
+             // ( cOptMatches == cOptNeeded ) ? cMatch++ : cMatch = 0;
+             InternalUsage::AttributesMatch(Option.getAttributesMatchType(), cOptMatches, cOptNeeded, cMatch);
         }
         return (cMatch == Option.getRequiredMatches() ) ? true : false;
     }
