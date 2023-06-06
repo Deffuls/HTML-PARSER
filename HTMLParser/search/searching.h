@@ -10,13 +10,13 @@ namespace Options{
 
     namespace MATCH_TYPES{
         enum STRING {
-            STRICT = 0,
+            STRICT_STR = 0,
             FIND_IN = 1,
         };
         
         enum ATTRIBUTES {
-            FLEXIBLE = 0,
-            STRICT = 1
+            FLEXIBLE = 2,
+            STRICT_COUNT = 3
         };
     }
 
@@ -24,16 +24,16 @@ namespace Options{
     struct SearchOption{
         public:
         SearchOption(std::string tagName, 
-        MATCH_TYPES::STRING stringMatch=MATCH_TYPES::STRING::STRICT,
+        MATCH_TYPES::STRING stringMatch=MATCH_TYPES::STRING::STRICT_STR,
         MATCH_TYPES::ATTRIBUTES attributesMatch=MATCH_TYPES::ATTRIBUTES::FLEXIBLE) : mTagName(tagName), mStringMatchType(stringMatch), mAttributesMatchType(attributesMatch) { mRequiredMatches = 1; }
 
         SearchOption(std::string tagName, mapAttributes attributes,
         MATCH_TYPES::ATTRIBUTES attributesMatch=MATCH_TYPES::ATTRIBUTES::FLEXIBLE,
-        MATCH_TYPES::STRING stringMatch=MATCH_TYPES::STRING::STRICT) : mTagName(tagName), mAttributes(attributes), mStringMatchType(stringMatch), mAttributesMatchType(attributesMatch) { mRequiredMatches = 2; }
+        MATCH_TYPES::STRING stringMatch=MATCH_TYPES::STRING::STRICT_STR) : mTagName(tagName), mAttributes(attributes), mStringMatchType(stringMatch), mAttributesMatchType(attributesMatch) { mRequiredMatches = 2; }
 
         SearchOption(std::string tagName, mapAttributes attributes, bool matchAttributesCount, int searchDeep = 0,
         MATCH_TYPES::ATTRIBUTES attributesMatch=MATCH_TYPES::ATTRIBUTES::FLEXIBLE,
-        MATCH_TYPES::STRING stringMatch=MATCH_TYPES::STRING::STRICT)
+        MATCH_TYPES::STRING stringMatch=MATCH_TYPES::STRING::STRICT_STR)
         : mTagName(tagName), mSearchDeep(searchDeep), mAttributes(attributes), mStringMatchType(stringMatch), mAttributesMatchType(attributesMatch) {}
 
         private:
@@ -75,7 +75,7 @@ namespace Search{
 
         switch (matchType)
         {
-        case Options::MATCH_TYPES::ATTRIBUTES::STRICT:
+        case Options::MATCH_TYPES::ATTRIBUTES::STRICT_COUNT:
             if (foundCounter == targetCount){
                 outResult++;
             }else {outResult = 0;}
@@ -94,7 +94,7 @@ namespace Search{
 
             switch (matchType)
             {
-            case Options::MATCH_TYPES::STRING::STRICT:
+            case Options::MATCH_TYPES::STRING::STRICT_STR:
                 if ( target == match){
                     matchCounter++;
                 }
