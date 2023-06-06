@@ -28,13 +28,14 @@ class HtmlParser{
 
     STATUS ParseHTML(WebElements::Html_Tag& rootElement){
         if (mReady != READY) { return HTML_NOT_FOUND; }
-        std::size_t stop_pos = mHtmlContent.find('>');
+        std::size_t stop_pos;
 
         {
             Format::ReplaceString(mHtmlContent, "\n", "");
             Format::ShrinkString(mHtmlContent, "<body>", "</body>");
 
             std::size_t start_pos = mHtmlContent.find('<');
+            stop_pos = mHtmlContent.find('>');
             
             if ( start_pos == std::string::npos || stop_pos == std::string::npos) { throw std::invalid_argument( "Unable to Locate Any < > Symbol." ); }
             stop_pos++;

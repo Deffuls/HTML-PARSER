@@ -29,7 +29,6 @@ void AppendText(std::string& htmlContent, WebElements::Html_Tag& self, std::size
           }
 }
 
-
 FunctionResponse ParseElements(std::string& htmlContent, WebElements::Html_Tag& itself, std::size_t lastPos){
      
      for (;;){
@@ -47,14 +46,14 @@ FunctionResponse ParseElements(std::string& htmlContent, WebElements::Html_Tag& 
                
                WebElements::Html_Tag child = CreateElement(element);
                itself.AppendChild(child);
+
+               if ( itself.isTagWithNoClose(element) ) { continue; }
           }
 
           FunctionResponse fResponse = ParseElements(htmlContent, itself.getLastCreatedChild(), lastPos);
           
           lastPos = fResponse.lastPosition;
           
-          if (fResponse.lastPosition == std::string::npos){
-               return fResponse;
-          }
+          if (fResponse.lastPosition == std::string::npos) { return fResponse; }
      }
 }

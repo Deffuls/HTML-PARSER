@@ -1,9 +1,6 @@
 #pragma once
-#include "../tags/html_tags.h"
-#include "../formating/text.h"
-#include "../types/types.h"
+#include <map>
 #include <string>
-#include <stdexcept>
 
 const std::map<std::string, int> cTagMap = {
         { "<base>", 1 },
@@ -104,43 +101,25 @@ const std::map<std::string, int> cTagMap = {
         { "<summary>", 96 },
         { "<menu>", 97 },
         { "<menuitem>", 98 },
-        { "<dialog>", 99 }
+        { "<dialog>", 99 },
+        { "<noscript>", 100}
     };
 
-mapAttributes ExtractAttributes(std::string& element){ // problem is related to this function somehow.
-    mapAttributes attributes;
-
-    std::size_t firstPos = element.find(" ", (std::size_t)0 );
-    std::size_t lastPos = element.find(">", (std::size_t)0 );
-
-    if (firstPos == std::string::npos) { return attributes; }
-    
-    firstPos++;
-
-    std::string onlyAttributes = element.substr(firstPos, ( lastPos - firstPos ) );
-
-    std::vector<std::string> vAttributes = Format::SplitString(onlyAttributes, ' ');
-
-    for( std::string attr : vAttributes){
-
-        std::vector<std::string> vKeyValue = Format::SplitString(attr, '=');
-        
-        std::string l1 = vKeyValue[0];
-        std::string l2 = vKeyValue[1];
-
-        attributes.emplace( vKeyValue[0], vKeyValue[1] );
-    }
-    element = element.substr(0, firstPos - 1) + ">";
-    return attributes;
-}
-
-
-WebElements::Html_Tag CreateElement(std::string elementName){
-
-    mapAttributes mAttributes = ExtractAttributes(elementName);
-    std::map<std::string, int>::const_iterator tag = cTagMap.find(elementName);
-    if( tag == cTagMap.end() ) { throw std::invalid_argument( (std::string("Unkown Element: ") + elementName) ); }
-    WebElements::Html_Tag html_tag = { tag->second, tag->first, mAttributes};
-
-    return html_tag;
-}
+const std::map<std::string, int> cTagCloseMap = {
+    {"<br>", 120},
+    {"<hr>", 121},
+    {"<img>", 122},
+    {"<input>", 123},
+    {"<link>", 124},
+    {"<meta>", 125},
+    {"<area>", 126},
+    {"<base>", 127},
+    {"<col>", 128},
+    {"<command>", 129},
+    {"<embed>", 130},
+    {"<keygen>", 131},
+    {"<param>", 132},
+    {"<source>", 133},
+    {"<track>", 134},
+    {"<wbr>", 135}
+    };

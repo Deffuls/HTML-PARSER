@@ -8,24 +8,41 @@
 
 namespace Options{
 
-    enum MATCH_TYPES {
-        STRICT = 0,
-        FIND_IN = 1
-    };
+    namespace MATCH_TYPES{
+        enum STRING {
+            STRICT = 0,
+            FIND_IN = 1,
+        };
+        
+        enum ATTRIBUTES {
+            FLEXIBLE = 0,
+            STRICT = 1
+        };
+    }
+
 
     struct SearchOption{
         public:
-        SearchOption(std::string tagName, MATCH_TYPES matchType=STRICT) : mTagName(tagName), mMatchType(matchType) { mRequiredMatches = 1; }
-        SearchOption(std::string tagName, mapAttributes attributes, MATCH_TYPES matchType=STRICT) : mTagName(tagName), mAttributes(attributes), mMatchType(matchType) { mRequiredMatches = 2; }
-        SearchOption(std::string tagName, mapAttributes attributes, bool matchAttributesCount, int searchDeep = 0, MATCH_TYPES matchType=STRICT)
-        : mTagName(tagName), mSearchDeep(searchDeep), mAttributes(attributes), mMatchType(matchType) {}
+        SearchOption(std::string tagName, 
+        MATCH_TYPES::STRING stringMatch=MATCH_TYPES::STRING::STRICT,
+        MATCH_TYPES::ATTRIBUTES attributesMatch=MATCH_TYPES::ATTRIBUTES::FLEXIBLE) : mTagName(tagName), mStringMatchType(stringMatch), mAttributesMatchType(attributesMatch) { mRequiredMatches = 1; }
+
+        SearchOption(std::string tagName, mapAttributes attributes,
+        MATCH_TYPES::ATTRIBUTES attributesMatch=MATCH_TYPES::ATTRIBUTES::FLEXIBLE,
+        MATCH_TYPES::STRING stringMatch=MATCH_TYPES::STRING::STRICT) : mTagName(tagName), mAttributes(attributes), mStringMatchType(stringMatch), mAttributesMatchType(attributesMatch) { mRequiredMatches = 2; }
+
+        SearchOption(std::string tagName, mapAttributes attributes, bool matchAttributesCount, int searchDeep = 0,
+        MATCH_TYPES::ATTRIBUTES attributesMatch=MATCH_TYPES::ATTRIBUTES::FLEXIBLE,
+        MATCH_TYPES::STRING stringMatch=MATCH_TYPES::STRING::STRICT)
+        : mTagName(tagName), mSearchDeep(searchDeep), mAttributes(attributes), mStringMatchType(stringMatch), mAttributesMatchType(attributesMatch) {}
 
         private:
         mapAttributes mAttributes;
         std::string mTagName;
         int mSearchDeep;
         int mRequiredMatches;
-        MATCH_TYPES mMatchType;
+        MATCH_TYPES::ATTRIBUTES mAttributesMatchType;
+        MATCH_TYPES::STRING mStringMatchType;
 
         public:
         const mapAttributes& getAttributes(){
@@ -36,8 +53,12 @@ namespace Options{
             return mTagName;
         }
 
-        MATCH_TYPES getMatchType(){
-            return mMatchType;
+        MATCH_TYPES::STRING getStringMatchType(){
+            return mStringMatchType;
+        }
+
+        MATCH_TYPES::ATTRIBUTES getAttributesMatchType(){
+            return mAttributesMatchType;
         }
 
         int getRequiredMatches() {
@@ -67,7 +88,6 @@ namespace Search{
                 break;
             }
         }
-        
     }
 
     bool MatchElement(const WebElements::Html_Tag& Tag, Options::SearchOption& Option){
@@ -98,7 +118,6 @@ namespace Search{
 
              ( cOptMatches == cOptNeeded ) ? cMatch++ : cMatch = 0 ;
         }
-        std::cout << "MATCH " << cMatch << " / " << Option.getRequiredMatches() << std::endl;
         return (cMatch == Option.getRequiredMatches() ) ? true : false;
     }
     
@@ -117,8 +136,8 @@ namespace Search{
             return TAG_NOT_FOUND;
         }
         
-        STATUS FindRootByChild(const WebElements::Html_Tag& Tag, const Options::SearchOption& Option){        
-
+        STATUS FindRootByChild(const WebElements::Html_Tag& Tag, const Options::SearchOption& Option){
+            return TAG_NOT_FOUND;
         }
     }
 }

@@ -1,5 +1,7 @@
 #pragma once
 #include "../types/types.h"
+#include "../builder/map_tags.h"
+#include "../formating/text.h"
 #include <vector>
 #include <string>
 #include <map>
@@ -12,7 +14,12 @@ namespace WebElements{
         Html_Tag() = default;
         Html_Tag(int tagCode, 
         std::string tagName, 
-        mapAttributes tagAttributes) : mTagCode(tagCode), mTagName(tagName), mTagAttributes(tagAttributes) {};
+        mapAttributes tagAttributes) : mTagCode(tagCode), mTagName(tagName), mTagAttributes(tagAttributes) {
+            std::cout << mTagName << std::endl;
+            for (auto it = mTagAttributes.begin(); it != mTagAttributes.end(); it++){
+                std::cout << it->first << "-" << it->second << std::endl;
+            }
+        };
         std::vector<Html_Tag> mChildsVector;
 
         private:
@@ -46,11 +53,18 @@ namespace WebElements{
             mChildsVector.push_back(child);
         }
 
+        bool isTagWithNoClose(std::string& element){
+            std::string onlyTag = Format::CopyUntil(element, {' ', '>'}) + ">";
+
+            return cTagCloseMap.find(onlyTag) != cTagCloseMap.end();
+        }
+
         bool isClosingTag(std::string& element){
-            std::string closingTag = mTagName.substr(1, mTagName.size() - 2);
+
+            std::string tagNameClear =  "</" + mTagName.substr(1, mTagName.size() - 2);
 
             return element.find("/", 0) != std::string::npos &&
-            element.find(closingTag) != std::string::npos ? true : false;
+            element.find( tagNameClear ) != std::string::npos ? true : false;
         }
 
     };
