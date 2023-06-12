@@ -15,10 +15,6 @@ namespace WebElements{
         Html_Tag(int tagCode, 
         std::string tagName, 
         mapAttributes tagAttributes) : mTagCode(tagCode), mTagName(tagName), mTagAttributes(tagAttributes) {
-            std::cout << mTagName << std::endl;
-            for (auto it = mTagAttributes.begin(); it != mTagAttributes.end(); it++){
-                std::cout << it->first << "-" << it->second << std::endl;
-            }
         };
         std::vector<Html_Tag> mChildsVector;
 
